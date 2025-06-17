@@ -3,7 +3,7 @@ export interface QRCodeData {
   // content: string;
   name?: string;
   shortUrl?: string;
-  originalUrl?: string;
+  original_url?: string;
   createdAt?: string;
   userId?: string;
   scans?: number;

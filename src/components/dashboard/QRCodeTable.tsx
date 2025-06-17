@@ -141,7 +141,7 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
   return (
     // FIX: Removed `overflow-hidden` from this container
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      <div className="overflow-x-auto">
+      <div className="overflow-auto min-h-[250px]">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
             <tr>
@@ -180,7 +180,7 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
                       {qrCode.name}
                     </div>
                     <div className="max-w-xs text-sm text-gray-500 truncate dark:text-gray-400">
-                      {qrCode.originalUrl}
+                      {qrCode.original_url}
                     </div>
                   </div>
                 </td>
@@ -252,7 +252,7 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
                         <div className="py-1">
                           <button
                             onClick={() => {
-                              window.open(qrCode.originalUrl, '_blank');
+                              window.open(qrCode.original_url, '_blank');
                               setActiveDropdown(null);
                             }}
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"

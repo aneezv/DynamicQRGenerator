@@ -106,7 +106,8 @@ export const DashboardPage: React.FC = () => {
     // FIX 1: Make the outer container a flex column that takes the full screen height
     <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       {/* FIX 2: Let this content container be a flex column as well */}
-      <div className="flex flex-col flex-1 w-full px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="flex flex-col flex-1 w-full min-h-0 px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+
         
         {/* Header - This will take its natural height */}
         <motion.div
@@ -152,9 +153,10 @@ export const DashboardPage: React.FC = () => {
             </span>
           </div>
           {/* This component will now live inside a container that has flexible height */}
-          <div className="flex-1">
+          <div className="flex-1 p-4 overflow-y-auto bg-white border border-gray-200 rounded-lg dark:border-gray-700 dark:bg-gray-900">
             <QRCodeTable qrCodes={qrCodes} onUpdate={fetchData} />
           </div>
+
         </motion.div>
       </div>
     </div>
