@@ -26,25 +26,25 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <header className="bg-white border-b border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
               <motion.div
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.5 }}
-                className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center"
+                className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-600"
               >
                 <QrCode className="w-5 h-5 text-white" />
               </motion.div>
               <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                QR Generator
+                DynoQR Generator
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden space-x-8 md:flex">
               {navigation.map((item) => {
                 if (item.requiresAuth && !user) return null;
                 const Icon = item.icon;
@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
               {/* Theme toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+                className="p-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               >
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
@@ -81,7 +81,7 @@ export const Header: React.FC = () => {
               {/* Auth section */}
               {user ? (
                 <div className="flex items-center space-x-2">
-                  <span className="hidden sm:block text-sm text-gray-700 dark:text-gray-300">
+                  <span className="hidden text-sm text-gray-700 sm:block dark:text-gray-300">
                     {user.email}
                   </span>
                   <Button
@@ -109,7 +109,7 @@ export const Header: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                className="p-2 text-gray-500 md:hidden hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -122,7 +122,7 @@ export const Header: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4"
+              className="py-4 border-t border-gray-200 md:hidden dark:border-gray-700"
             >
               <div className="space-y-2">
                 {navigation.map((item) => {
@@ -158,7 +158,7 @@ export const Header: React.FC = () => {
                           signOut();
                           setIsMobileMenuOpen(false);
                         }}
-                        className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                        className="flex items-center w-full px-3 py-2 space-x-2 text-sm text-gray-700 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>
@@ -170,7 +170,7 @@ export const Header: React.FC = () => {
                         setIsAuthModalOpen(true);
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      className="flex items-center w-full px-3 py-2 space-x-2 text-sm text-gray-700 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <User className="w-4 h-4" />
                       <span>Sign In</span>

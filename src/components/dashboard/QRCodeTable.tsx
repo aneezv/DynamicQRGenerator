@@ -10,7 +10,6 @@ import {
   MoreVertical,
   Calendar,
   MousePointer,
-  Settings
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -19,19 +18,83 @@ import { QRCodeData } from '../../types';
 import { copyToClipboard } from '../../utils/qrUtils';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+// Assuming you have a Skeleton component like one from shadcn/ui
+import { Skeleton } from '../ui/Skeleton'; 
 
+// 1. UPDATE THE PROPS INTERFACE
 interface QRCodeTableProps {
   qrCodes: QRCodeData[];
   onUpdate: () => void;
+  loading: boolean; // <-- ADD THIS PROP
 }
 
-export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) => {
+const TableSkeleton: React.FC = () => (
+    <div className="w-full">
+      <table className="min-w-full">
+        {/* The header is optional for a skeleton, but can help maintain layout */}
+        <thead className="border-b border-gray-200 dark:border-gray-700">
+            <tr>
+              <th className="px-6 py-4 text-left"><Skeleton className="w-20 h-4" /></th>
+              <th className="px-6 py-4 text-left"><Skeleton className="w-24 h-4" /></th>
+              <th className="px-6 py-4 text-left"><Skeleton className="w-16 h-4" /></th>
+              <th className="px-6 py-4 text-left"><Skeleton className="w-20 h-4" /></th>
+              <th className="px-6 py-4 text-left"><Skeleton className="h-4 w-28" /></th>
+              <th className="px-6 py-4 text-right"><Skeleton className="w-16 h-4" /></th>
+            </tr>
+        </thead>
+        <tbody>
+          {[...Array(5)].map((_, index) => (
+            <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
+              {/* Name / URL column */}
+              <td className="px-6 py-4">
+                <div className="space-y-2">
+                  <Skeleton className="w-3/4 h-4" />
+                  <Skeleton className="w-1/2 h-3" />
+                </div>
+              </td>
+              {/* Short URL column */}
+              <td className="px-6 py-4">
+                <Skeleton className="w-24 h-5" />
+              </td>
+              {/* Scans column */}
+              <td className="px-6 py-4">
+                 <div className="flex items-center space-x-2">
+                    <Skeleton className="w-8 h-8 rounded-full" />
+                    <Skeleton className="w-8 h-5" />
+                 </div>
+              </td>
+              {/* Status column */}
+              <td className="px-6 py-4">
+                <Skeleton className="w-20 h-6 rounded-full" />
+              </td>
+              {/* Created column */}
+              <td className="px-6 py-4">
+                 <div className="flex items-center space-x-2">
+                    <Skeleton className="w-4 h-4" />
+                    <Skeleton className="w-24 h-5" />
+                 </div>
+              </td>
+              {/* Actions column */}
+              <td className="px-6 py-4">
+                <div className="flex justify-end">
+                    <Skeleton className="w-6 h-6 rounded-full" />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+// 3. DESTRUCTURE THE NEW PROP
+export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate, loading: isLoadingData }) => {
   const navigate = useNavigate();
+  // Note: I've renamed `loading` to `isLoadingData` to avoid confusion with your existing 'loading' state for row actions.
   const [loading, setLoading] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -64,27 +127,16 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
   };
 
   const deleteQRCode = async (id: string) => {
+    // This function and others remain unchanged
     if (!confirm('Are you sure you want to delete this QR code? This action cannot be undone.')) {
       return;
     }
 
     try {
       setLoading(id);
-      
-      // Delete analytics first
-      await supabase
-        .from('analytics')
-        .delete()
-        .eq('qr_code_id', id);
-
-      // Then delete the QR code
-      const { error } = await supabase
-        .from('qr_codes')
-        .delete()
-        .eq('id', id);
-
+      await supabase.from('analytics').delete().eq('qr_code_id', id);
+      const { error } = await supabase.from('qr_codes').delete().eq('id', id);
       if (error) throw error;
-
       toast.success('QR code deleted successfully');
       onUpdate();
     } catch (error: any) {
@@ -117,7 +169,17 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
     setActiveDropdown(null);
   };
 
-  if (qrCodes.length === 0) {
+  // 4. ADD THE MAIN LOADING CHECK
+  if (isLoadingData) {
+    return (
+      <div className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+        <TableSkeleton />
+      </div>
+    );
+  }
+
+  // 5. MODIFY THE EMPTY STATE CHECK TO RUN *AFTER* LOADING IS FINISHED
+  if (!isLoadingData && qrCodes.length === 0) {
     return (
       <Card className="p-8 text-center">
         <div className="max-w-md mx-auto">
@@ -139,7 +201,7 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
   }
 
   return (
-    // FIX: Removed `overflow-hidden` from this container
+    // The rest of your component remains the same
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <div className="overflow-auto min-h-[250px]">
         <table className="w-full">
@@ -174,7 +236,8 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate }) =
                 transition={{ delay: index * 0.05 }}
                 className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
-                <td className="px-6 py-4 whitespace-nowrap">
+                {/* Your existing table row content... */}
+                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {qrCode.name}

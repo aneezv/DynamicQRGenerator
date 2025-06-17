@@ -1,13 +1,13 @@
 // src/pages/DashboardPage.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { QRCodeData, DashboardStats } from '../types';
-import { QRCodeTable } from '../components/dashboard/QRCodeTable'; 
+import { QRCodeTable } from '../components/dashboard/QRCodeTable';
 import { StatsCards } from '../components/dashboard/StatsCards';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -25,8 +25,12 @@ export const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = async () => {
+  // Using useCallback to memoize fetchData, preventing re-creation on re-renders
+  const fetchData = useCallback(async () => {
     if (!user) return;
+
+    // Set loading state only on initial load, not on refresh
+    if (!refreshing) setLoading(true);
 
     try {
       const { data: qrData, error: qrError } = await supabase
@@ -56,7 +60,7 @@ export const DashboardPage: React.FC = () => {
       const activeQRCodes = formattedQRCodes.filter(qr => qr.isActive).length;
       
       const today = new Date().toISOString().split('T')[0];
-      const { data: todayAnalytics, count } = await supabase
+      const { count } = await supabase
         .from('analytics')
         .select('id', { count: 'exact', head: true })
         .gte('scanned_at', `${today}T00:00:00.000Z`)
@@ -75,19 +79,22 @@ export const DashboardPage: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [user, refreshing]); // Add 'refreshing' as a dependency
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchData();
+    // fetchData will be called by the useEffect below
   };
 
   useEffect(() => {
-    fetchData();
-  }, [user]);
+    if (user) {
+        fetchData();
+    }
+  // The 'refreshing' state change will trigger this effect
+  }, [user, fetchData, refreshing]);
 
   if (!user) {
-    // This part is fine, no changes needed.
+    // This part is already responsive and works well.
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
         <Card className="max-w-md p-8 text-center">
@@ -103,35 +110,39 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    // FIX 1: Make the outer container a flex column that takes the full screen height
-    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* FIX 2: Let this content container be a flex column as well */}
-      <div className="flex flex-col flex-1 w-full min-h-0 px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-
+    // The main container occupies the full viewport height and uses a column-based flex layout.
+    <div className="flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      {/* 
+        This is the main content wrapper. 
+        - flex-1: It grows to take up all available vertical space.
+        - flex-col: It arranges its children (header, stats, table) vertically.
+        - min-h-0: Crucial for preventing flexbox overflow issues, allowing child elements to scroll correctly.
+      */}
+      <main className="flex flex-col flex-1 w-full min-h-0 px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         
-        {/* Header - This will take its natural height */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+        {/* Header: This section takes its natural height and does not grow. */}
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-start justify-between flex-shrink-0 mb-8 sm:flex-row sm:items-center"
         >
           <div>
-            <h1 className="mb-2 text-3xl font-bold text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text">
+            <h1 className="mb-1 text-3xl font-bold text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text">
               Dashboard
             </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Manage your QR codes and track their performance
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage your QR codes and track their performance.
             </p>
           </div>
-          <div className="flex mt-4 space-x-3 sm:mt-0">
-            <Button variant="outline" icon={RefreshCw} onClick={handleRefresh} loading={refreshing}>Refresh</Button>
-            <Link to="/dynamic"><Button variant="primary" icon={Plus}>New QR Code</Button></Link>
+          <div className="flex w-full mt-4 space-x-3 sm:w-auto sm:mt-0">
+            <Button variant="outline" icon={RefreshCw} onClick={handleRefresh} loading={refreshing} className="flex-1 sm:flex-none">Refresh</Button>
+            <Link to="/dynamic" className="flex-1 sm:flex-none"><Button variant="primary" icon={Plus} className="w-full">New QR Code</Button></Link>
           </div>
-        </motion.div>
+        </motion.header>
 
-        {/* Stats Cards - This will also take its natural height */}
+        {/* Stats Cards: This section also takes its natural height. */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="flex-shrink-0 mb-8"
@@ -139,26 +150,23 @@ export const DashboardPage: React.FC = () => {
           <StatsCards stats={stats} loading={loading} />
         </motion.div>
 
-        {/* QR Codes Table - FIX 3: This container will grow to fill ALL remaining space */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-col flex-1 min-h-0" // flex-1 makes it grow, min-h-0 prevents overflow bugs
-        >
-          <div className="flex items-center justify-between flex-shrink-0 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Your QR Codes</h2>
-            <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full dark:text-gray-400 dark:bg-gray-800">
-              {qrCodes.length} total
-            </span>
-          </div>
-          {/* This component will now live inside a container that has flexible height */}
-          <div className="flex-1 p-4 overflow-y-auto bg-white border border-gray-200 rounded-lg dark:border-gray-700 dark:bg-gray-900">
-            <QRCodeTable qrCodes={qrCodes} onUpdate={fetchData} />
-          </div>
-
-        </motion.div>
-      </div>
+        {/* 
+          QR Codes Table Container: This is the key to the responsive layout.
+          - flex-1: It grows to fill all remaining vertical space left by the header and stats.
+          - flex-col: It arranges its children vertically.
+          - min-h-0: Prevents this container from overflowing its parent when the content is large.
+        */}
+       <motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.2 }}
+  className="flex flex-col flex-1 min-h-0"
+>
+  <div className="flex-1 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-sm min-h-[200px] dark:border-gray-700 dark:bg-gray-900">
+    <QRCodeTable qrCodes={qrCodes} onUpdate={fetchData} loading={loading} />
+  </div>
+</motion.div>
+      </main>
     </div>
   );
 };
