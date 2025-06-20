@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+
 import QRCode from 'react-qr-code';
 import { Download, Upload, Palette, Settings, Copy, Check } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
