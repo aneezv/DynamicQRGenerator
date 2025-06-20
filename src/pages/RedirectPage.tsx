@@ -113,7 +113,7 @@ export const RedirectPage: React.FC = () => {
   if (status === 'error') {
     return (
       <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
-        <Card className="w-full max-w-md p-8 text-center"><div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full dark:bg-red-900/20"><AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" /></div><h2 className="text-xl font-semibold">QR Code Error</h2><p className="mb-6 text-gray-500">{error}</p><Link to="/"><Button variant="primary" fullWidth>Go to Home</Button></Link></Card>
+        <Card className="w-full max-w-md p-8 text-center"><div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full dark:bg-red-900/20"><AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" /></div><h2 className="text-xl font-semibold">QR Code Error</h2><p className="mb-6 text-gray-500">{error}</p></Card>
       </div>
     );
   }

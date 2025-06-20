@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ExternalLink, 
-  Edit3, 
-  Trash2, 
-  Eye, 
+import {
+  ExternalLink,
+  Edit3,
+  Trash2,
+  Eye,
   EyeOff,
   Copy,
   MoreVertical,
@@ -19,7 +19,7 @@ import { copyToClipboard } from '../../utils/qrUtils';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 // Assuming you have a Skeleton component like one from shadcn/ui
-import { Skeleton } from '../ui/Skeleton'; 
+import { Skeleton } from '../ui/Skeleton';
 
 // 1. UPDATE THE PROPS INTERFACE
 interface QRCodeTableProps {
@@ -29,63 +29,63 @@ interface QRCodeTableProps {
 }
 
 const TableSkeleton: React.FC = () => (
-    <div className="w-full">
-      <table className="min-w-full">
-        {/* The header is optional for a skeleton, but can help maintain layout */}
-        <thead className="border-b border-gray-200 dark:border-gray-700">
-            <tr>
-              <th className="px-6 py-4 text-left"><Skeleton className="w-20 h-4" /></th>
-              <th className="px-6 py-4 text-left"><Skeleton className="w-24 h-4" /></th>
-              <th className="px-6 py-4 text-left"><Skeleton className="w-16 h-4" /></th>
-              <th className="px-6 py-4 text-left"><Skeleton className="w-20 h-4" /></th>
-              <th className="px-6 py-4 text-left"><Skeleton className="h-4 w-28" /></th>
-              <th className="px-6 py-4 text-right"><Skeleton className="w-16 h-4" /></th>
-            </tr>
-        </thead>
-        <tbody>
-          {[...Array(5)].map((_, index) => (
-            <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-              {/* Name / URL column */}
-              <td className="px-6 py-4">
-                <div className="space-y-2">
-                  <Skeleton className="w-3/4 h-4" />
-                  <Skeleton className="w-1/2 h-3" />
-                </div>
-              </td>
-              {/* Short URL column */}
-              <td className="px-6 py-4">
+  <div className="w-full">
+    <table className="min-w-full">
+      {/* The header is optional for a skeleton, but can help maintain layout */}
+      <thead className="border-b border-gray-200 dark:border-gray-700">
+        <tr>
+          <th className="px-6 py-4 text-left"><Skeleton className="w-20 h-4" /></th>
+          <th className="px-6 py-4 text-left"><Skeleton className="w-24 h-4" /></th>
+          <th className="px-6 py-4 text-left"><Skeleton className="w-16 h-4" /></th>
+          <th className="px-6 py-4 text-left"><Skeleton className="w-20 h-4" /></th>
+          <th className="px-6 py-4 text-left"><Skeleton className="h-4 w-28" /></th>
+          <th className="px-6 py-4 text-right"><Skeleton className="w-16 h-4" /></th>
+        </tr>
+      </thead>
+      <tbody>
+        {[...Array(5)].map((_, index) => (
+          <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
+            {/* Name / URL column */}
+            <td className="px-6 py-4">
+              <div className="space-y-2">
+                <Skeleton className="w-3/4 h-4" />
+                <Skeleton className="w-1/2 h-3" />
+              </div>
+            </td>
+            {/* Short URL column */}
+            <td className="px-6 py-4">
+              <Skeleton className="w-24 h-5" />
+            </td>
+            {/* Scans column */}
+            <td className="px-6 py-4">
+              <div className="flex items-center space-x-2">
+                <Skeleton className="w-8 h-8 rounded-full" />
+                <Skeleton className="w-8 h-5" />
+              </div>
+            </td>
+            {/* Status column */}
+            <td className="px-6 py-4">
+              <Skeleton className="w-20 h-6 rounded-full" />
+            </td>
+            {/* Created column */}
+            <td className="px-6 py-4">
+              <div className="flex items-center space-x-2">
+                <Skeleton className="w-4 h-4" />
                 <Skeleton className="w-24 h-5" />
-              </td>
-              {/* Scans column */}
-              <td className="px-6 py-4">
-                 <div className="flex items-center space-x-2">
-                    <Skeleton className="w-8 h-8 rounded-full" />
-                    <Skeleton className="w-8 h-5" />
-                 </div>
-              </td>
-              {/* Status column */}
-              <td className="px-6 py-4">
-                <Skeleton className="w-20 h-6 rounded-full" />
-              </td>
-              {/* Created column */}
-              <td className="px-6 py-4">
-                 <div className="flex items-center space-x-2">
-                    <Skeleton className="w-4 h-4" />
-                    <Skeleton className="w-24 h-5" />
-                 </div>
-              </td>
-              {/* Actions column */}
-              <td className="px-6 py-4">
-                <div className="flex justify-end">
-                    <Skeleton className="w-6 h-6 rounded-full" />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+              </div>
+            </td>
+            {/* Actions column */}
+            <td className="px-6 py-4">
+              <div className="flex justify-end">
+                <Skeleton className="w-6 h-6 rounded-full" />
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
 
 // 3. DESTRUCTURE THE NEW PROP
 export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate, loading: isLoadingData }) => {
@@ -237,7 +237,7 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate, loa
                 className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
                 {/* Your existing table row content... */}
-                 <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {qrCode.name}
@@ -309,13 +309,14 @@ export const QRCodeTable: React.FC<QRCodeTableProps> = ({ qrCodes, onUpdate, loa
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>
-                    
+
                     {activeDropdown === qrCode.id && (
                       <div className="absolute right-0 z-10 w-48 mt-2 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700">
                         <div className="py-1">
                           <button
                             onClick={() => {
-                              window.open(qrCode.original_url, '_blank');
+                              const destination = `${window.location.origin}/r/${qrCode.shortUrl}`;
+                              window.open(destination, '_blank');
                               setActiveDropdown(null);
                             }}
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
